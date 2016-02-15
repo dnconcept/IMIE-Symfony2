@@ -1,0 +1,7 @@
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+
+article:
+    resource: "@ArticleBundle/Resources/config/routing.php"
+    prefix:   /articles
