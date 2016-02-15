@@ -1,5 +1,137 @@
-{% extends 'base.html.twig' %}
+{% extends "::base.html.twig" %}
 
 {% block body %}
-    <h1>Liste des articles !</h1>
+    <h3>Page d'accueil de notre bundle ArticleBundle</h3>
+
+    <p><a href="{{ path("homepage") }}">url_homepage avec TWIG = {{ path("homepage") }}</a></p>
+
+    {% set valeurNegative = -50 %}
+
+
+
+    <h4>Utilisation des filtres</h4>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Nom variable</th>
+            <th>Nom du Filtre</th>
+            <th>Valeur initiale</th>
+            <th>Valeur filtrée</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>valeurNegative</td>
+            <td>abs</td>
+            <td>{{ valeurNegative }}</td>
+            <td>{{ valeurNegative | abs }}</td>
+        </tr>
+        <tr>
+            <td>dateDuJour</td>
+            <td>date("d/m/Y h:i:s A")</td>
+            <td>{{ dump(dateDuJour) }}</td>
+            <td>{{ dateDuJour | date("d/m/Y h:i:s A") }}</td>
+        </tr>
+        <tr>
+            <td>escape TEST</td>
+            <td>escape</td>
+            <td>{{ "<a href='test'>Test</a>" }}</td>
+            <td>{{ "<a href='test'>Test</a>" | e }}</td>
+        </tr>
+        <tr>
+            <td>contenuHtml</td>
+            <td>raw</td>
+            <td>{{ contenuHtml }}</td>
+            <td>{{ contenuHtml | raw }}</td>
+        </tr>
+        <tr>
+            <td>format Filter</td>
+            <td>format</td>
+            <td>{{ "J'aime %s et %s" }}</td>
+            <td>{{ "J'aime %s et %s"| format("symfony", "PHP") }}</td>
+        </tr>
+        <tr>
+            <td>categories</td>
+            <td>length</td>
+            <td>{{ dump(categories) }}</td>
+            <td>{{ categories | length }}</td>
+        </tr>
+        <tr>
+            <td>categories</td>
+            <td>upper</td>
+            <td>{{ "symfony" }}</td>
+            <td>{{ "symfony" | upper }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <h4>Utilisation fonction set</h4>
+
+
+    {% set nom_application = "Application d'articles" %}
+
+    <p>nom_application => {{ nom_application }}</p>
+
+    {% set titre2 %}
+        <h2 id="pagination">titre2 pagination</h2>
+    {% endset %}
+
+    {{ titre2 }}
+
+    {{ titre2 | title | raw }}
+
+    <p>{{ "test title" | title }}</p>
+    <p> {{ "test capitalize" | capitalize }}</p>
+
+    <h4>Liste des items</h4>
+    <ul>
+        {% for item in items %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Liste des catégories</h4>
+    {#{% set categories = [] %}#}
+    {% if categories is not defined %}
+        <p>Aucunes catégories disponibles !</p>
+    {% else %}
+        <table class="table table-bordered table-striped">
+            <tbody>
+            {# Commentaire avec TWIG #}
+            {% for key, category in categories %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>loop.index0 =>  {{ loop.index0 }}</td>
+                    <td>loop.index =>  {{ loop.index }}</td>
+                    <td>{{ category.name }}</td>
+                    <td>{{ category.description }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <h4>Boucle for</h4>
+
+    {% for i in 0..10 %}
+        - {{ i }} <br>
+    {% endfor %}
+
+    <hr>
+
+    {% set user_name = "username" %}
+    {% if user_name %}
+        <p>La variable username est définie et vaut : {{ user_name }}</p>
+    {% else %}
+        <p>Variable username est vide !</p>
+    {% endif %}
+
+
+    {% if var_undefined is defined %}
+        <p>La variable var_undefined existe et vaut : {{ var_undefined }} !</p>
+    {% else %}
+        <p>La variable var_undefined n'existe pas !</p>
+    {% endif %}
+
 {% endblock %}

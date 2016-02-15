@@ -1,0 +1,18 @@
+article_homepage:
+    path:     /
+    defaults: { _controller: ArticleBundle:Default:index }
+
+article_detail:
+    path:     /detail/{slug}-{id}
+    defaults: { _controller: ArticleBundle:Default:detail }
+    requirements:
+        id: \d+
+        slug: "[a-zA-Z0-9-]+"
+
+article_list:
+    path:     /list-articles
+    defaults: {_controller: ArticleBundle:Default:list}
+
+article_add:
+    path:     /ajouter
+    defaults: {_controller: ArticleBundle:Default:add}
