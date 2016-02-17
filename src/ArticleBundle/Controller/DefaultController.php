@@ -2,26 +2,20 @@
 
 namespace ArticleBundle\Controller;
 
+use ArticleBundle\Entity\Article;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class DefaultController extends Controller
 {
 
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-
-//        return $this->forward("AppBundle:Default:test");
-//        return $this->redirect($url_for_article1);
-//        return $this->redirectToRoute("homepage");
-
         return $this->render('ArticleBundle:Default:index.html.twig', [
-            "dateDuJour"  => new \DateTime(),
-            "contenuHtml" => "<a href='test'>Test</a>",
-            "variable1"   => "Valeur de la variable 1",
-            "items"       => ["item 1", "item 2", "item 3"],
-            "categories"  => [
+            "dateDuJour" => new \DateTime(),
+            "categories" => [
                 ["name" => "catégorie 1", "description" => "Description de la catégorie 1"],
                 ["name" => "catégorie 2", "description" => "Description de la catégorie 2"],
             ],
@@ -30,51 +24,93 @@ class DefaultController extends Controller
 
     public function detailAction($id, $slug, Request $request)
     {
-        $id = (int)$id;
-        $article = null;
-        if ($article == null) {
+        if (null === $article = $this->findArticleById((int)$id)) {
+            return $this->redirectToRoute("article_list");
             throw $this->createNotFoundException();
         }
         return $this->render('ArticleBundle:Default:detail.html.twig', [
-            "slug" => $slug,
-            "id"   => $id
+            "article" => $article
         ]);
     }
 
-    public function addAction()
+    public function addAction(Request $request)
     {
-        $content = $this->renderView("ArticleBundle:Default:add.html.twig");
-        return new Response($content);
+        $article = new Article();
+        $article
+            ->setTitle("Titre 3")
+            ->setDescription("Description 2")
+            ->setContent("Contenu 3")
+            ->setCreatedBy("creator 3");
+
+        $em = $this->getDoctrine()->getManager();
+        try {
+            $em->persist($article);
+            $em->flush();
+            $flashMessage = "L'article a bien été ajouté !";
+        } catch (\Exception $e) {
+            $flashMessage = "Problème de base de données !";
+        }
+
+        /** @var Session $session */
+        $session = $request->getSession();
+        $session->getFlashBag()->add('info', $flashMessage);
+
+        return $this->redirectToRoute("article_detail", [
+            "id"   => $article->getId(),
+            "slug" => $article->getSlug()
+        ]);
+
+        return $this->render("ArticleBundle:Default:add.html.twig");
     }
 
-    public function injectionRequestAction(Request $request)
+    public function deleteAction($id, Request $request)
     {
-        // $_GET
-        $query = $request->query;
-        //$_POST
-        $post = $request->request;
-
-        if ($request->getMethod() == "POST") {
-
-        } elseif ($request->isXmlHttpRequest()) {
-
+        $em = $this->getDoctrine()->getManager();
+        if (null === $article = $this->findArticleById($id)) {
+            throw $this->createNotFoundException();
         }
+        $em->remove($article);
+        $em->flush();
+
+        /** @var Session $session */
+        $session = $request->getSession();
+        $session->getFlashBag()->add('info', "L'article id = $id a bien été supprimé ...");
+
+        return $this->redirectToRoute("article_list");
+    }
+
+    public function updateAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $article = $this->findArticleById($id);
+
+        $article->setTitle("Nouveau titre qu'on veut !");
+
+        $em->persist($article);
+        $em->flush();
+
+        return $this->redirectToRoute("article_list");
+    }
+
+    /**
+     * @param $id
+     * @return Article|null|object
+     */
+    private function findArticleById($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $repoArticle = $em->getRepository("ArticleBundle:Article");
+        return $repoArticle->find($id);
     }
 
     public function listAction()
     {
-        $lorem = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Ndi tempora incidum exercitationem ulla";
-        $articles = [];
-        for ($i = 0; $i < 10; $i++) {
-            $articles[] = [
-                "id"          => 1,
-                "title"       => "Titre $i",
-                "description" => "Description article $i",
-                "content"     => $lorem,
-                "created_at"  => new \DateTime(),
-                "created_by"  => "Créateur $i"
-            ];
-        }
+        $articles = $this
+            ->getDoctrine()
+            ->getRepository("ArticleBundle:Article")
+            ->findAll();
+
         return $this->render("ArticleBundle:Default:list.html.twig", [
             "articles" => $articles
         ]);

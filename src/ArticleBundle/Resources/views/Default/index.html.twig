@@ -1,137 +1,200 @@
-{% extends "::base.html.twig" %}
-
+{% extends "ArticleBundle::layout.html.twig" %}
+{% block stylesheets %}
+    <style type="text/css">
+        .content h3 {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+{% endblock %}
 {% block body %}
-    <h3>Page d'accueil de notre bundle ArticleBundle</h3>
 
-    <p><a href="{{ path("homepage") }}">url_homepage avec TWIG = {{ path("homepage") }}</a></p>
+    {{ parent() }}
+    <div class="content">
+        <h2>Page d'accueil de notre bundle ArticleBundle</h2>
 
-    {% set valeurNegative = -50 %}
+        <h3>Fonctions</h3>
+        <p>
+            Génération de l'url de la route "article_homepage" avec la fonction <strong>path</strong> de TWIG <br>
+        <pre>{% raw %}{{ path("article_homepage") }}{% endraw %} => <a href="{{ path("article_homepage") }}">{{ path("article_homepage") }}</a></pre>
+        </p>
 
+        <p>
+            Génération de l'url de la route "article_homepage" avec la fonction <strong>url</strong> de TWIG <br>
+        <pre>{% raw %}{{ url("article_homepage") }}{% endraw %} => <a href="{{ url("article_homepage") }}">{{ url("article_homepage") }}</a></pre>
+        </p>
 
+        <h3>Définir des variables dans le template</h3>
 
-    <h4>Utilisation des filtres</h4>
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Nom variable</th>
-            <th>Nom du Filtre</th>
-            <th>Valeur initiale</th>
-            <th>Valeur filtrée</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>valeurNegative</td>
-            <td>abs</td>
-            <td>{{ valeurNegative }}</td>
-            <td>{{ valeurNegative | abs }}</td>
-        </tr>
-        <tr>
-            <td>dateDuJour</td>
-            <td>date("d/m/Y h:i:s A")</td>
-            <td>{{ dump(dateDuJour) }}</td>
-            <td>{{ dateDuJour | date("d/m/Y h:i:s A") }}</td>
-        </tr>
-        <tr>
-            <td>escape TEST</td>
-            <td>escape</td>
-            <td>{{ "<a href='test'>Test</a>" }}</td>
-            <td>{{ "<a href='test'>Test</a>" | e }}</td>
-        </tr>
-        <tr>
-            <td>contenuHtml</td>
-            <td>raw</td>
-            <td>{{ contenuHtml }}</td>
-            <td>{{ contenuHtml | raw }}</td>
-        </tr>
-        <tr>
-            <td>format Filter</td>
-            <td>format</td>
-            <td>{{ "J'aime %s et %s" }}</td>
-            <td>{{ "J'aime %s et %s"| format("symfony", "PHP") }}</td>
-        </tr>
-        <tr>
-            <td>categories</td>
-            <td>length</td>
-            <td>{{ dump(categories) }}</td>
-            <td>{{ categories | length }}</td>
-        </tr>
-        <tr>
-            <td>categories</td>
-            <td>upper</td>
-            <td>{{ "symfony" }}</td>
-            <td>{{ "symfony" | upper }}</td>
-        </tr>
-        </tbody>
-    </table>
+        {% raw %}
+            <pre>
+{% set nom_application = "Application d'articles" %}
+&lt;p&gt;nom_application =&gt; {{ nom_application }}&lt;/p&gt;</pre>
+        {% endraw %}
 
+        {% set nom_application = "Application d'articles" %}
+        <p>nom_application => {{ nom_application }}</p>
 
-    <h4>Utilisation fonction set</h4>
-
-
-    {% set nom_application = "Application d'articles" %}
-
-    <p>nom_application => {{ nom_application }}</p>
-
-    {% set titre2 %}
-        <h2 id="pagination">titre2 pagination</h2>
-    {% endset %}
-
-    {{ titre2 }}
-
-    {{ titre2 | title | raw }}
-
-    <p>{{ "test title" | title }}</p>
-    <p> {{ "test capitalize" | capitalize }}</p>
-
-    <h4>Liste des items</h4>
-    <ul>
-        {% for item in items %}
-            <li>{{ item }}</li>
-        {% endfor %}
-    </ul>
-
-    <h4>Liste des catégories</h4>
-    {#{% set categories = [] %}#}
-    {% if categories is not defined %}
-        <p>Aucunes catégories disponibles !</p>
-    {% else %}
-        <table class="table table-bordered table-striped">
+        <h3>Filtres</h3>
+        {% set contenuHtml = "<a href='test'>Test</a>" %}
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+            <tr>
+                <th>Nom du Filtre</th>
+                <th>Valeur initiale</th>
+                <th>Valeur filtrée</th>
+            </tr>
+            </thead>
             <tbody>
-            {# Commentaire avec TWIG #}
-            {% for key, category in categories %}
-                <tr>
-                    <td>{{ key }}</td>
-                    <td>loop.index0 =>  {{ loop.index0 }}</td>
-                    <td>loop.index =>  {{ loop.index }}</td>
-                    <td>{{ category.name }}</td>
-                    <td>{{ category.description }}</td>
-                </tr>
-            {% endfor %}
+            <tr>
+                <td>abs</td>
+                <td>{{ -50 }}</td>
+                <td>{{ -50 | abs }}</td>
+            </tr>
+            <tr>
+                <td>date("d/m/Y h:i:s A")</td>
+                <td>{{ dump(dateDuJour) }}</td>
+                <td>{{ dateDuJour | date("d/m/Y h:i:s A") }}</td>
+            </tr>
+            <tr>
+                <td>escape</td>
+                <td>{{ "<a href='test'>Test</a>" }}</td>
+                <td>{{ "<a href='test'>Test</a>" | e }}</td>
+            </tr>
+            <tr>
+                <td>raw</td>
+                <td>{{ contenuHtml }}</td>
+                <td>{{ contenuHtml | raw }}</td>
+            </tr>
+            <tr>
+                <td>format</td>
+                <td>{{ "J'aime %s et %s" }}</td>
+                <td>{{ "J'aime %s et %s"| format("symfony", "PHP") }}</td>
+            </tr>
+            <tr>
+                <td>length</td>
+                <td>{{ dump(categories) }}</td>
+                <td>{{ categories | length }}</td>
+            </tr>
+            <tr>
+                <td>upper</td>
+                <td>{{ "SymFony" }}</td>
+                <td>{{ "SymFony" | upper }}</td>
+            </tr>
+            <tr>
+                <td>lower</td>
+                <td>{{ "SymFony" }}</td>
+                <td>{{ "SymFony" | lower }}</td>
+            </tr>
+            <tr>
+                <td>title</td>
+                <td>filtre title</td>
+                <td>{{ "filtre title" | title }}</td>
+            </tr>
+            <tr>
+                <td>capitalize</td>
+                <td>filtre capitalize</td>
+                <td>{{ "filtre capitalize" | capitalize }}</td>
+            </tr>
             </tbody>
         </table>
-    {% endif %}
 
-    <h4>Boucle for</h4>
+        <h3>Boucle for sur tableau associatif / liste des catégories</h3>
+        {% raw %}
+            <pre>
+Paramètres de la vue définis dans le controller
+$viewParameters = [
+    "dateDuJour" => new \DateTime(),
+    "categories" => [
+        ["name" => "catégorie 1", "description" => "Description de la catégorie 1"],
+        ["name" => "catégorie 2", "description" => "Description de la catégorie 2"],
+    ],
+];</pre>
+        {% endraw %}
+        {% if categories is not defined %}
+            <p>Aucunes catégories disponibles !</p>
+        {% else %}
+            <table class="table table-bordered table-striped">
+                <tbody>
+                {# Commentaire avec TWIG #}
+                {% for key, category in categories %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>loop.index0 => {{ loop.index0 }}</td>
+                        <td>loop.index => {{ loop.index }}</td>
+                        <td>{{ category.name }}</td>
+                        <td>{{ category.description }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
 
-    {% for i in 0..10 %}
-        - {{ i }} <br>
-    {% endfor %}
+        <h3>Boucle for</h3>
 
-    <hr>
-
-    {% set user_name = "username" %}
-    {% if user_name %}
-        <p>La variable username est définie et vaut : {{ user_name }}</p>
-    {% else %}
-        <p>Variable username est vide !</p>
-    {% endif %}
+        {% raw %}
+            <pre>
+{% for i in 0..10 %}
+    - item {{ i }} &lt;br&gt;
+{% endfor %}</pre>
+        {% endraw %}
 
 
-    {% if var_undefined is defined %}
-        <p>La variable var_undefined existe et vaut : {{ var_undefined }} !</p>
-    {% else %}
-        <p>La variable var_undefined n'existe pas !</p>
-    {% endif %}
+        {% for i in 0..10 %}
+            - item {{ i }} <br>
+        {% endfor %}
+        <br>
+        {% raw %}
+            <pre>
+{% set items = ["item 1", "item 2", "item 3"] %}
+&lt;ul&gt;
+{% for item in items %}
+    &lt;li&gt;{{ item }}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;</pre>
+        {% endraw %}
 
+
+        {% set items = ["item 1", "item 2", "item 3"] %}
+        <ul>
+            {% for item in items %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Les structures de contrôle</h3>
+
+        {% raw %}
+            <pre>
+{% set user_name = "username" %}
+{% if user_name %}
+    &lt;p&gt;La variable username est définie et vaut : {{ user_name }}&lt;/p&gt;
+{% else %}
+    &lt;p&gt;Variable username est vide !&lt;/p&gt;
+{% endif %}</pre>
+        {% endraw %}
+
+        {% set user_name = "username" %}
+        {% if user_name %}
+            <p>La variable username est définie et vaut : {{ user_name }}</p>
+        {% else %}
+            <p>Variable username est vide !</p>
+        {% endif %}
+
+        {% raw %}
+            <pre>
+{% if var_undefined is defined %}
+    &lt;p&gt;La variable var_undefined existe et vaut : {{ var_undefined }} !&lt;/p&gt;
+{% else %}
+    &lt;p&gt;La variable var_undefined n'existe pas !&lt;/p&gt;
+{% endif %}</pre>
+        {% endraw %}
+
+        {% if var_undefined is defined %}
+            <p>La variable var_undefined existe et vaut : {{ var_undefined }} !</p>
+        {% else %}
+            <p>La variable var_undefined n'existe pas !</p>
+        {% endif %}
+    </div>
 {% endblock %}

@@ -16,3 +16,17 @@ article_list:
 article_add:
     path:     /ajouter
     defaults: {_controller: ArticleBundle:Default:add}
+
+article_delete:
+    path:     /delete/{id}
+    defaults: {_controller: ArticleBundle:Default:delete}
+    requirements:
+        id: \d+
+
+article_update:
+    path:     /update-article/{id}
+    defaults: {_controller: ArticleBundle:Default:update}
+    requirements:
+        id: \d+
+
+
