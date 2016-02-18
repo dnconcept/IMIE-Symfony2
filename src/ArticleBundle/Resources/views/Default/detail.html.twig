@@ -24,4 +24,14 @@
             <td colspan="2">Créé le {{ article.createdAt | date("d M Y h:i:s A") }}</td>
         </tr>
     </table>
+
+    <div class="comments">
+        {% for comment in article.comments %}
+            <div>
+                <p>{{ comment.content }}</p>
+                <div class="footer">{{ comment.createdAt|date("d M Y") }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
 {% endblock %}

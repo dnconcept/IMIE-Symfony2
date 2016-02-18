@@ -45,4 +45,16 @@ class TestController
         return $this->redirectToRoute("homepage");
     }
 
+
+    public function arrayResultAction()
+    {
+//        $repo = $this->getDoctrine()
+//            ->getRepository('ArticleBundle:Article');
+//        $query = $repo->createQueryBuilder('a')
+//            ->orderBy('a.title', 'ASC')
+//            ->getQuery();
+//        $produits = $query->getArrayResult();
+//        dump($produits);
+    }
+
 }

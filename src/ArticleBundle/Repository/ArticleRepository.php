@@ -12,4 +12,28 @@ use Doctrine\ORM\EntityRepository;
  */
 class ArticleRepository extends EntityRepository
 {
+
+    public function findAllWithComments()
+    {
+        $qb = $this->createQueryBuilder("art");
+        $qb->leftJoin("art.comments", "comments_alias");
+        $qb->addSelect("comments_alias");
+        $qb->orderBy("art.updatedAt");
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findArticleByDescription($description)
+    {
+        $qb = $this->createQueryBuilder("art");
+        $qb
+            ->orderBy("art.createdAt", "DESC")
+            ->where("art.description LIKE :description")
+            ->setParameter(":description", "%$description%");
+
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
+
 }

@@ -3,6 +3,9 @@
 namespace ArticleBundle\Controller;
 
 use ArticleBundle\Entity\Article;
+use ArticleBundle\Entity\Comment;
+use ArticleBundle\Repository\ArticleRepository;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,12 +25,22 @@ class DefaultController extends Controller
         ]);
     }
 
+
     public function detailAction($id, $slug, Request $request)
     {
+
+        $em = $this->getDoctrine()->getManager();
+        $repoArticle = $em->getRepository("ArticleBundle:Article");
+//        dump($article);
+
+//        $article = $repoArticle->findWithComments($id);
+//        dump($article);
+
         if (null === $article = $this->findArticleById((int)$id)) {
             return $this->redirectToRoute("article_list");
             throw $this->createNotFoundException();
         }
+
         return $this->render('ArticleBundle:Default:detail.html.twig', [
             "article" => $article
         ]);
@@ -93,27 +106,98 @@ class DefaultController extends Controller
         return $this->redirectToRoute("article_list");
     }
 
+    public function listAction(Request $request)
+    {
+        $articleRepository = $this->getRepository();
+
+        //Exemple avec récupération paramètres dans l'URL
+//        $description = $request->query->get("description");
+//        $articles = $articleRepository->findArticleByDescription($description);
+
+
+//  Une seule requête exécutée si on accède au commentaire dans la vue ...
+//        $articles = $repo->findAllWithComments();
+
+//  Beaucoup de requêtes exécutées si on accède au commentaire dans la vue ...
+//        $articles = $repo->findAll();
+
+        return $this->render("ArticleBundle:Default:list.html.twig", [
+            "articles" => $articleRepository->findAllWithComments()
+        ]);
+    }
+
+    public function addImageAction($id)
+    {
+        return new Response("Image ajouté avec succès sur l'article $id");
+    }
+
+    // ******************* CONTROLLER HELPERS *****************************//
+
+    /**
+     * @return ArticleRepository
+     */
+    protected function getRepository()
+    {
+        return $this
+            ->getDoctrine()
+            ->getRepository("ArticleBundle:Article");
+    }
+
     /**
      * @param $id
      * @return Article|null|object
      */
     private function findArticleById($id)
     {
-        $em = $this->getDoctrine()->getManager();
-        $repoArticle = $em->getRepository("ArticleBundle:Article");
-        return $repoArticle->find($id);
+        return $this->getRepository()->find($id);
     }
 
-    public function listAction()
-    {
-        $articles = $this
-            ->getDoctrine()
-            ->getRepository("ArticleBundle:Article")
-            ->findAll();
+    // ******************* FONCTION DE TESTS *****************************//
 
-        return $this->render("ArticleBundle:Default:list.html.twig", [
-            "articles" => $articles
-        ]);
+    private function requeteDQLPerso(EntityManager $em, $description)
+    {
+        if (null !== $description) {
+            $query = $em->createQuery("SELECT art
+        FROM ArticleBundle:Article art
+        WHERE art.description LIKE ?10
+        ORDER BY art.createdAt DESC
+        ")
+                ->setParameter(10, "%$description%");
+
+//            $query = $em->createQuery("SELECT art
+//        FROM ArticleBundle:Article art
+//        WHERE art.description LIKE :description_param
+//        ORDER BY art.createdAt DESC
+//        ")
+//                ->setParameter("description_param", "%$description%");
+
+        } else {
+            $query = $em->createQuery("SELECT art
+        FROM ArticleBundle:Article art
+        ORDER BY art.createdAt DESC
+        ");
+        }
+    }
+
+    private function addComments(EntityManager $em, Article $article)
+    {
+        $comments = $article->getComments();
+
+        $comment1 = new Comment();
+        $comment1
+            ->setContent("Commentaire 1 sur article " . $article->getId())
+            ->setArticle($article);
+
+        $comment2 = new Comment();
+        $comment2
+            ->setContent("Commentaire 2 sur article " . $article->getId())
+            ->setArticle($article);
+
+        $comments[] = $comment1;
+        $comments[] = $comment2;
+
+        $em->persist($article);
+        $em->flush();
     }
 
 }

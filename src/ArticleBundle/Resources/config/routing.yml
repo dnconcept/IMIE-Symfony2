@@ -29,4 +29,8 @@ article_update:
     requirements:
         id: \d+
 
-
+article_add_image:
+    path:     /article/{id}/add-image
+    defaults: {_controller: ArticleBundle:Default:addImage}
+    requirements:
+        id: \d+

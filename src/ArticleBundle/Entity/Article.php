@@ -3,6 +3,7 @@
 namespace ArticleBundle\Entity;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -67,12 +68,28 @@ class Article
     private $createdBy;
 
     /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="article", cascade={"persist", "remove"})
+     */
+    private $comments;
+
+    /**
+     * @var Image
+     *
+     * @ORM\OneToOne(targetEntity="Image", inversedBy="article")
+     */
+    private $image;
+
+
+    /**
      * Article constructor.
      */
     public function __construct()
     {
         $this->createdAt = new DateTime();
         $this->updatedAt = new DateTime();
+        $this->comments = new  ArrayCollection();
     }
 
     /**
@@ -230,4 +247,60 @@ class Article
 //        $this->assertEqual("titre-----3", $return);
 //    }
 
+
+    /**
+     * Add comments
+     *
+     * @param \ArticleBundle\Entity\Comment $comments
+     * @return Article
+     */
+    public function addComment(\ArticleBundle\Entity\Comment $comments)
+    {
+        $this->comments[] = $comments;
+        return $this;
+    }
+
+    /**
+     * Remove comments
+     *
+     * @param \ArticleBundle\Entity\Comment $comments
+     */
+    public function removeComment(\ArticleBundle\Entity\Comment $comments)
+    {
+        $this->comments->removeElement($comments);
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+
+    /**
+     * Set image
+     *
+     * @param \ArticleBundle\Entity\Image $image
+     * @return Article
+     */
+    public function setImage(\ArticleBundle\Entity\Image $image = null)
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * Get image
+     *
+     * @return \ArticleBundle\Entity\Image 
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
 }

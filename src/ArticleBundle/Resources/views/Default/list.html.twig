@@ -15,6 +15,7 @@
             <th>Description</th>
             <th>Contenu</th>
             <th>Créé le</th>
+            <th></th>
             <th colspan="4">Par</th>
         </tr>
         </thead>
@@ -26,6 +27,7 @@
                 <td>{{ article.description }}</td>
                 <td>{{ article.content }}</td>
                 <td>{{ article.createdAt | date("d M Y h:i A") }}</td>
+                <td>{{ article.comments | length }} commentaires</td>
                 <td>{{ article.createdBy }}</td>
                 <td>
                     <a class="btn btn-default"
