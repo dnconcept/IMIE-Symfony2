@@ -31,11 +31,14 @@ framework:
         handler_id:  ~
     fragments:       ~
     http_method_override: true
+    validation: { enable_annotations: true }
 
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+    form:
+        resources: ['bootstrap_3_layout.html.twig']
 
 # Doctrine Configuration
 doctrine:

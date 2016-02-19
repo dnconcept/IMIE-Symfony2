@@ -3,29 +3,37 @@ article_homepage:
     defaults: { _controller: ArticleBundle:Default:index }
 
 article_detail:
-    path:     /detail/{slug}-{id}
+    path:     /article/detail/{slug}-{id}
     defaults: { _controller: ArticleBundle:Default:detail }
     requirements:
         id: \d+
         slug: "[a-zA-Z0-9-]+"
 
 article_list:
-    path:     /list-articles
+    path:     /article/liste
     defaults: {_controller: ArticleBundle:Default:list}
 
 article_add:
-    path:     /ajouter
+    path:     /article/ajouter
     defaults: {_controller: ArticleBundle:Default:add}
 
 article_delete:
-    path:     /delete/{id}
+    path:     /article/supprimer/{id}
     defaults: {_controller: ArticleBundle:Default:delete}
     requirements:
         id: \d+
 
 article_update:
-    path:     /update-article/{id}
+    path:     /article/editer/{id}
     defaults: {_controller: ArticleBundle:Default:update}
+    methods:  [GET]
+    requirements:
+        id: \d+
+
+article_update_post:
+    path:     /article/editer-via-post/{id}
+    defaults: {_controller: ArticleBundle:Default:updatePost}
+    methods:  [POST]
     requirements:
         id: \d+
 

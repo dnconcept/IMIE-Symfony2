@@ -5,13 +5,14 @@ namespace ArticleBundle\Entity;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Article
  *
  * @ORM\Table(name="article")
  * @ORM\Entity(repositoryClass="ArticleBundle\Repository\ArticleRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Article
 {
@@ -29,6 +30,8 @@ class Article
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=150)
+     * @Assert\NotNull()
+     * @Assert\Length(min=15, max=150)
      */
     private $title;
 
@@ -36,6 +39,8 @@ class Article
      * @var string
      *
      * @ORM\Column(name="description", type="text")
+     * @Assert\NotNull()
+     * @Assert\Length(min=15, max=150)
      */
     private $description;
 
@@ -43,6 +48,7 @@ class Article
      * @var string
      *
      * @ORM\Column(name="content", type="text")
+     * @Assert\NotNull()
      */
     private $content;
 
@@ -77,10 +83,9 @@ class Article
     /**
      * @var Image
      *
-     * @ORM\OneToOne(targetEntity="Image", inversedBy="article")
+     * @ORM\OneToOne(targetEntity="Image", inversedBy="article", cascade={"persist"})
      */
     private $image;
-
 
     /**
      * Article constructor.
@@ -273,7 +278,7 @@ class Article
     /**
      * Get comments
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getComments()
     {
@@ -290,17 +295,28 @@ class Article
     public function setImage(\ArticleBundle\Entity\Image $image = null)
     {
         $this->image = $image;
-
+        if (null !== $image) {
+            $image->setArticle($this);
+        }
         return $this;
     }
 
     /**
      * Get image
      *
-     * @return \ArticleBundle\Entity\Image 
+     * @return \ArticleBundle\Entity\Image
      */
     public function getImage()
     {
         return $this->image;
     }
+
+    /**
+     * @ORM\prePersist
+     */
+    public function onPersistEntity()
+    {
+        $this->updatedAt = new \DateTime();
+    }
+
 }

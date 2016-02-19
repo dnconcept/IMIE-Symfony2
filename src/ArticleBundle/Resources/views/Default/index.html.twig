@@ -17,21 +17,21 @@
         <h3>Fonctions</h3>
         <p>
             Génération de l'url de la route "article_homepage" avec la fonction <strong>path</strong> de TWIG <br>
-        <pre>{% raw %}{{ path("article_homepage") }}{% endraw %} => <a href="{{ path("article_homepage") }}">{{ path("article_homepage") }}</a></pre>
+        <pre>{% verbatim %}{{ path("article_homepage") }}{% endverbatim %} => <a href="{{ path("article_homepage") }}">{{ path("article_homepage") }}</a></pre>
         </p>
 
         <p>
             Génération de l'url de la route "article_homepage" avec la fonction <strong>url</strong> de TWIG <br>
-        <pre>{% raw %}{{ url("article_homepage") }}{% endraw %} => <a href="{{ url("article_homepage") }}">{{ url("article_homepage") }}</a></pre>
+        <pre>{% verbatim %}{{ url("article_homepage") }}{% endverbatim %} => <a href="{{ url("article_homepage") }}">{{ url("article_homepage") }}</a></pre>
         </p>
 
         <h3>Définir des variables dans le template</h3>
 
-        {% raw %}
+        {% verbatim %}
             <pre>
 {% set nom_application = "Application d'articles" %}
 &lt;p&gt;nom_application =&gt; {{ nom_application }}&lt;/p&gt;</pre>
-        {% endraw %}
+        {% endverbatim %}
 
         {% set nom_application = "Application d'articles" %}
         <p>nom_application => {{ nom_application }}</p>
@@ -101,7 +101,7 @@
         </table>
 
         <h3>Boucle for sur tableau associatif / liste des catégories</h3>
-        {% raw %}
+        {% verbatim %}
             <pre>
 Paramètres de la vue définis dans le controller
 $viewParameters = [
@@ -111,7 +111,7 @@ $viewParameters = [
         ["name" => "catégorie 2", "description" => "Description de la catégorie 2"],
     ],
 ];</pre>
-        {% endraw %}
+        {% endverbatim %}
         {% if categories is not defined %}
             <p>Aucunes catégories disponibles !</p>
         {% else %}
@@ -133,19 +133,19 @@ $viewParameters = [
 
         <h3>Boucle for</h3>
 
-        {% raw %}
+        {% verbatim %}
             <pre>
 {% for i in 0..10 %}
     - item {{ i }} &lt;br&gt;
 {% endfor %}</pre>
-        {% endraw %}
+        {% endverbatim %}
 
 
         {% for i in 0..10 %}
             - item {{ i }} <br>
         {% endfor %}
         <br>
-        {% raw %}
+        {% verbatim %}
             <pre>
 {% set items = ["item 1", "item 2", "item 3"] %}
 &lt;ul&gt;
@@ -153,7 +153,7 @@ $viewParameters = [
     &lt;li&gt;{{ item }}&lt;/li&gt;
 {% endfor %}
 &lt;/ul&gt;</pre>
-        {% endraw %}
+        {% endverbatim %}
 
 
         {% set items = ["item 1", "item 2", "item 3"] %}
@@ -165,7 +165,7 @@ $viewParameters = [
 
         <h3>Les structures de contrôle</h3>
 
-        {% raw %}
+        {% verbatim %}
             <pre>
 {% set user_name = "username" %}
 {% if user_name %}
@@ -173,7 +173,7 @@ $viewParameters = [
 {% else %}
     &lt;p&gt;Variable username est vide !&lt;/p&gt;
 {% endif %}</pre>
-        {% endraw %}
+        {% endverbatim %}
 
         {% set user_name = "username" %}
         {% if user_name %}
@@ -182,14 +182,14 @@ $viewParameters = [
             <p>Variable username est vide !</p>
         {% endif %}
 
-        {% raw %}
+        {% verbatim %}
             <pre>
 {% if var_undefined is defined %}
     &lt;p&gt;La variable var_undefined existe et vaut : {{ var_undefined }} !&lt;/p&gt;
 {% else %}
     &lt;p&gt;La variable var_undefined n'existe pas !&lt;/p&gt;
 {% endif %}</pre>
-        {% endraw %}
+        {% endverbatim %}
 
         {% if var_undefined is defined %}
             <p>La variable var_undefined existe et vaut : {{ var_undefined }} !</p>

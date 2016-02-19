@@ -12,13 +12,16 @@
 <div class="container" style="background-color: lightblue">
     <h1>Notre site d'articles / Layout base</h1>
     <div class="row">
-        <div class="col-md-3" style="background-color: #5eb5e0">
+        <aside class="col-md-3" style="background-color: #5eb5e0">
             <h3>Menu Général</h3>
             <div class="list-group">
                 <a href="{{ path("homepage") }}" class="list-group-item">Accueil</a>
                 <a href="{{ path("article_homepage") }}" class="list-group-item">Bundle Article</a>
             </div>
-        </div>
+            {% if app.user %}
+                <a href="{{ path("logout") }}">Logout</a>
+            {% endif %}
+        </aside>
         <div class="col-md-9" style="background-color: #A5C261">
             {% block flash %}
                 {% set flash_info = app.session.flashbag.get('info') %}

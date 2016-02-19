@@ -1,9 +1,31 @@
 {% extends "ArticleBundle::layout.html.twig" %}
 
+{% form_theme formulaire 'bootstrap_3_layout.html.twig' %}
+
 {% block body %}
+    <h1>Ajout d'un article</h1>
 
-<h1>Ajout d'un article</h1>
 
+    {#{{ form(formulaire) }}#}
+
+    {{ form_start(formulaire, { "attr" : { "novalidate" : "novalidate"} }) }}
+
+    {{ form_row(formulaire.title) }}
+
+    {#<div class="label">#}
+    {#{{ form_label(formulaire.title, "Titre") }}#}
+    {#</div>#}
+    {#{{ form_widget(formulaire.title, { "attr" : { "class" : "form-control"} }) }}#}
+    {#{{ form_errors(formulaire.title) }}#}
+
+
+    {#{{ form_widget(formulaire.url, { "attr" : { "class" : "form-control"} }) }}#}
+
+    {#<div class="image-form">#}
+    {#{{ form(formulaire.image) }}#}
+    {#</div>#}
+
+    {{ form_end(formulaire) }}
 {% endblock %}
 
 

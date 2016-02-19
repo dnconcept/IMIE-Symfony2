@@ -4,9 +4,11 @@ namespace ArticleBundle\Controller;
 
 use ArticleBundle\Entity\Article;
 use ArticleBundle\Entity\Comment;
+use ArticleBundle\Form\ArticleType;
 use ArticleBundle\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -14,7 +16,11 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class DefaultController extends Controller
 {
 
-    public function indexAction(Request $request)
+    /**
+     * Page d'accueil de notre bundle
+     * @return Response
+     */
+    public function indexAction()
     {
         return $this->render('ArticleBundle:Default:index.html.twig', [
             "dateDuJour" => new \DateTime(),
@@ -25,55 +31,53 @@ class DefaultController extends Controller
         ]);
     }
 
-
+    /**
+     * Vue de détail de l'article
+     * @param $id
+     * @param $slug
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
     public function detailAction($id, $slug, Request $request)
     {
-
-        $em = $this->getDoctrine()->getManager();
-        $repoArticle = $em->getRepository("ArticleBundle:Article");
-//        dump($article);
-
-//        $article = $repoArticle->findWithComments($id);
-//        dump($article);
-
         if (null === $article = $this->findArticleById((int)$id)) {
             return $this->redirectToRoute("article_list");
             throw $this->createNotFoundException();
         }
-
         return $this->render('ArticleBundle:Default:detail.html.twig', [
             "article" => $article
         ]);
     }
 
+    /**
+     * Ajout d'un article  [GET ou POST]
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
     public function addAction(Request $request)
     {
         $article = new Article();
-        $article
-            ->setTitle("Titre 3")
-            ->setDescription("Description 2")
-            ->setContent("Contenu 3")
-            ->setCreatedBy("creator 3");
+        $form = $this->createForm(ArticleType::class, $article);
+        $form->add("Ajouter", "submit");
 
-        $em = $this->getDoctrine()->getManager();
-        try {
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
             $em->persist($article);
             $em->flush();
             $flashMessage = "L'article a bien été ajouté !";
-        } catch (\Exception $e) {
-            $flashMessage = "Problème de base de données !";
+            /** @var Session $session */
+            $session = $request->getSession();
+            $session->getFlashBag()->add('info', $flashMessage);
+            return $this->redirectToRoute("article_detail", [
+                "id"   => $article->getId(),
+                "slug" => $article->getSlug()
+            ]);
         }
-
-        /** @var Session $session */
-        $session = $request->getSession();
-        $session->getFlashBag()->add('info', $flashMessage);
-
-        return $this->redirectToRoute("article_detail", [
-            "id"   => $article->getId(),
-            "slug" => $article->getSlug()
+        return $this->render("ArticleBundle:Default:add.html.twig", [
+            "formulaire" => $form->createView()
         ]);
-
-        return $this->render("ArticleBundle:Default:add.html.twig");
     }
 
     public function deleteAction($id, Request $request)
@@ -92,43 +96,110 @@ class DefaultController extends Controller
         return $this->redirectToRoute("article_list");
     }
 
+    // Accessible seulement en GET
     public function updateAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
-
         $article = $this->findArticleById($id);
+        $form = $this->createFormForArticle($article);
+        return $this->render("ArticleBundle:Default:update.html.twig", [
+            "formulaire" => $form->createView()
+        ]);
+    }
 
-        $article->setTitle("Nouveau titre qu'on veut !");
+    /**
+     * Création du formulaire de l'article à partir du form builder
+     * @param Article $article
+     * @return Form
+     */
+    private function createFormForArticle(Article $article)
+    {
+        $formBuilder = $this->createFormBuilder($article);
+        $formBuilder
+            ->add("title", "text")
+            ->add("description", "textarea")
+            ->add("content", "textarea")
+            ->add("createdAt", "datetime")
+            ->add("Ajouter", "submit")
+            ->add("Reset", "reset")
+            ->setAction($this->generateUrl("article_update_post", ["id" => $article->getId()]));
+        /** @var Form $form */
+        return $formBuilder->getForm();
+    }
 
-        $em->persist($article);
-        $em->flush();
-
-        return $this->redirectToRoute("article_list");
+    // Accessible seulement en POST
+    public function updatePostAction($id, Request $request)
+    {
+        $article = $this->findArticleById($id);
+        $form = $this->createFormForArticle($article);
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $articleUpdated = $form->getData();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($articleUpdated);
+            $em->flush();
+            return $this->redirectToRoute("article_detail", [
+                "id"   => $article->getId(),
+                "slug" => $article->getSlug(),
+            ]);
+        }
+        return new Response("updatePostAction");
     }
 
     public function listAction(Request $request)
     {
         $articleRepository = $this->getRepository();
 
-        //Exemple avec récupération paramètres dans l'URL
+        //Exemple avec récupération des articles paramètres dans l'URL
+        //On récupére tous les articles contenant dans leur description l'expression $description
+        //$description est récupéré à partir des paramètres passé dans l'url (?description=test_description)
 //        $description = $request->query->get("description");
 //        $articles = $articleRepository->findArticleByDescription($description);
 
 
 //  Une seule requête exécutée si on accède au commentaire dans la vue ...
-//        $articles = $repo->findAllWithComments();
+//        $articles = $articleRepository->findAllWithComments();
 
 //  Beaucoup de requêtes exécutées si on accède au commentaire dans la vue ...
-//        $articles = $repo->findAll();
+//        $articles = $articleRepository->findAll();
 
         return $this->render("ArticleBundle:Default:list.html.twig", [
             "articles" => $articleRepository->findAllWithComments()
         ]);
     }
 
+    /**
+     * Permet d'ajouter une image à l'article avec id = $id
+     * @param $id   Id de l'article
+     * @return Response
+     */
     public function addImageAction($id)
     {
-        return new Response("Image ajouté avec succès sur l'article $id");
+        //Equivalent à $this->getRepository()->find($id)
+//        $article = $this->getRepository()->findOneBy([
+//            "id" => $id
+//        ]);
+
+        //Récuration de l'article
+        /** @var Article $article */
+        $article = $this->getRepository()->find($id);
+
+
+        //Création d'une instance d'Image
+        $image = new \ArticleBundle\Entity\Image();
+        $image
+            ->setUrl("http://www.beneteau.fr/var/beneteau/storage/images/media/images/first-20/first-20/3020700-1-fre-FR/First-20.jpg")
+            ->setTitle("First 210");
+
+        //On affecte l'image à l'article, le setter de l'article s'occupe de définir l'article de l'image !
+        $article->setImage($image);
+
+        //Enregistrement en base de données
+        $em = $this->getDoctrine()->getManager();
+//        $em->persist($image);  // Pas besoin de persister l'image si on a défini l'optoin cascade={"persist"} dans le mapping (annotations)
+        $em->persist($article);
+        $em->flush();
+
+        return new Response("Image ajoutée avec succès sur l'article $id");
     }
 
     // ******************* CONTROLLER HELPERS *****************************//
@@ -145,7 +216,7 @@ class DefaultController extends Controller
 
     /**
      * @param $id
-     * @return Article|null|object
+     * @return Article|null
      */
     private function findArticleById($id)
     {
@@ -154,6 +225,11 @@ class DefaultController extends Controller
 
     // ******************* FONCTION DE TESTS *****************************//
 
+    /**
+     * @param EntityManager $em
+     * @param $description
+     * @return \Doctrine\ORM\AbstractQuery|\Doctrine\ORM\Query
+     */
     private function requeteDQLPerso(EntityManager $em, $description)
     {
         if (null !== $description) {
@@ -164,12 +240,13 @@ class DefaultController extends Controller
         ")
                 ->setParameter(10, "%$description%");
 
-//            $query = $em->createQuery("SELECT art
-//        FROM ArticleBundle:Article art
-//        WHERE art.description LIKE :description_param
-//        ORDER BY art.createdAt DESC
-//        ")
-//                ->setParameter("description_param", "%$description%");
+            //Autre manière de "binder" les paramètres de notre requète DQL
+            $query = $em->createQuery("SELECT art
+        FROM ArticleBundle:Article art
+        WHERE art.description LIKE :description_param
+        ORDER BY art.createdAt DESC
+        ")
+                ->setParameter("description_param", "%$description%");
 
         } else {
             $query = $em->createQuery("SELECT art
@@ -177,8 +254,13 @@ class DefaultController extends Controller
         ORDER BY art.createdAt DESC
         ");
         }
+        return $query;
     }
 
+    /**
+     * @param EntityManager $em
+     * @param Article $article
+     */
     private function addComments(EntityManager $em, Article $article)
     {
         $comments = $article->getComments();

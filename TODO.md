@@ -31,3 +31,14 @@ CoreSphereConsoleBundle
 
 - [CoreSphereConsoleBundle] : https://github.com/CoreSphere/ConsoleBundle
 - [FOSUserBundle]           : https://github.com/FriendsOfSymfony/FOSUserBundle
+
+https://packagist.org/packages/symfony/twig-bridge
+
+
+### Problème de cache
+
+Suppression total du cache : php app/console cache:clear --no-warmup
+Rafraichissement du cache  : php app/console cache:warmup
+
+https://github.com/symfony/symfony/issues/12893
+
