@@ -2,12 +2,12 @@
 
 {% block title %} {{ article.title }} | {{ parent() }}{% endblock %}
 
-{% block body %}
-
-    {{ parent() }}
-
+{% block page %}
     <h3>Détail de l'article {{ article.title }}</h3>
-    <table class="table table-bordered">
+    {% if is_granted("ROLE_USER") %}
+        <a class="btn btn-default" href="{{ path("article_update", {"id": article.id}) }}"><i class="fa fa-edit"></i> Editer</a>
+    {% endif %}
+    <table class="table table-bordered table-striped">
         <tr>
             <td>Id</td>
             <td>{{ article.id }}</td>
@@ -25,17 +25,33 @@
             <td>{{ article.content }}</td>
         </tr>
         <tr>
+            <td>Créateur</td>
+            <td>{{ article.creator is not null ? article.creator.username : "" }}</td>
+        </tr>
+        <tr>
             <td colspan="2">Créé le {{ article.createdAt | date("d M Y h:i:s A") }}</td>
         </tr>
     </table>
 
-    <div class="comments">
-        {% for comment in article.comments %}
-            <div>
-                <p>{{ comment.content }}</p>
-                <div class="footer">{{ comment.createdAt|date("d M Y") }}</div>
-            </div>
-        {% endfor %}
+    <div>
+        {% if article.image is not null %}
+            <img src="{{ article.image.url }}" alt="{{ article.image.title }}">
+        {% endif %}
     </div>
+
+    {% if article.comments | length %}
+        <div>
+            {% for comment in article.comments %}
+                <div class="comment">
+                    <p>{{ comment.content }}</p>
+                    <div class="footer">{{ comment.createdAt|date("d M Y") }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        Aucun commentaire
+    {% endif %}
+
+
 
 {% endblock %}

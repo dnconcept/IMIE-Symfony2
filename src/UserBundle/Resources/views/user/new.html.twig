@@ -1,0 +1,15 @@
+{% extends '@User/layout.html.twig' %}
+
+{% block body %}
+    <h1>Création d'utilisateur</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <div class="btn-group">
+        <button type="submit" class="btn btn-primary"><i class="fa fa-add"></i> Ajouter l'utilisateur</button>
+        <a href="{{ path('user_list') }}" class="btn btn-default"><i class="fa fa-arrow-left"></i> Retour à la liste</a>
+    </div>
+    {{ form_end(form) }}
+
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends '@User/layout.html.twig' %}
+
+{% block title %}Editer l'utilisateur {{ user.username|e }} | {{ parent() }}{% endblock %}
+
+{% block body %}
+    <h1>Edition d'un utilisateur</h1>
+
+    {{ form_start(edit_form) }}
+    {{ form_widget(edit_form) }}
+    <div class="btn-group">
+        <a href="{{ path('user_list') }}" class="btn btn-default"><i class="fa fa-arrow-left"></i> Retour à la liste</a>
+        <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Enregistrer l'utilisateur</button>
+    </div>
+    {{ form_end(edit_form) }}
+    <br>
+    {{ form_start(delete_form) }}
+    <button class="btn btn-danger" type="submit"><i class="fa fa-remove"></i> Supprimer l'utilisateur</button>
+    {{ form_end(delete_form) }}
+
+{% endblock %}

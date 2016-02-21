@@ -1,0 +1,20 @@
+{% extends "UserBundle::layout.html.twig" %}
+
+{% block body %}
+    <div class="text-center">
+        <form action="{{ path("login_check") }}" method="post">
+            <h3>Page de connection</h3>
+            <hr>
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error.message }}
+                </div>
+            {% endif %}
+            <input type="text" name="_username" class="form-control" placeholder="Nom d'utilisateur"><br>
+
+            <input type="password" name="_password" class="form-control" placeholder="Mot de passe"><br>
+
+            <button type="submit" class="btn btn-primary">Se connecter</button>
+        </form>
+    </div>
+{% endblock %}

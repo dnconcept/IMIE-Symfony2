@@ -1,0 +1,75 @@
+.table > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.table.table-striped {
+    background-color: #fff;
+}
+
+.side-bar {
+    background-color: #5eb5e0
+}
+
+.main-page {
+    background-color: #A5C261;
+    padding-bottom: 15px;
+}
+
+footer.footer {
+    padding: 15px;
+    background-color: whitesmoke;
+    margin-right: -15px;
+    margin-left: -15px;
+    border-top: 5px solid #ccc;
+}
+
+#wrapper {
+    background-color: #fcf8e3;
+    padding: 20px 20px 120px 20px;
+    margin: 20px 10px;
+}
+
+#icon-status, #icon-book {
+    float: left;
+    height: 64px;
+    margin-right: 1em;
+    margin-top: -4px;
+    width: 64px;
+}
+
+#icon-book {
+    display: none;
+}
+
+@media (min-width: 768px) {
+
+    #icon-book {
+        display: inline-block;
+    }
+
+    #status a, #next a {
+        display: block;
+    }
+
+    @-webkit-keyframes fade-in {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+    @keyframes fade-in {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+    .sf-toolbar {
+        opacity: 0;
+        -webkit-animation: fade-in 1s .2s forwards;
+        animation: fade-in 1s .2s forwards;
+    }
+}

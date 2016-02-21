@@ -42,3 +42,9 @@ article_add_image:
     defaults: {_controller: ArticleBundle:Default:addImage}
     requirements:
         id: \d+
+
+test_hello:
+    path:  /test/hello
+    defaults: {_controller: ArticleBundle:Test:hello}
+
+

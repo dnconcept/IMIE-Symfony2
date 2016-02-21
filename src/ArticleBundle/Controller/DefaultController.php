@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 
+use JMS\SecurityExtraBundle\Annotation\Secure;
+
 class DefaultController extends Controller
 {
 
@@ -22,6 +24,10 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
+        $serviceLocalFile = $this->container->get('article.local_file');
+//        $serviceLocalFile = $this->get('article.local_file');
+        $serviceLocalFile->store(["data" => "data_tostore"]);
+
         return $this->render('ArticleBundle:Default:index.html.twig', [
             "dateDuJour" => new \DateTime(),
             "categories" => [
@@ -35,14 +41,13 @@ class DefaultController extends Controller
      * Vue de détail de l'article
      * @param $id
      * @param $slug
-     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function detailAction($id, $slug, Request $request)
+    public function detailAction($id, $slug)
     {
         if (null === $article = $this->findArticleById((int)$id)) {
             return $this->redirectToRoute("article_list");
-            throw $this->createNotFoundException();
+//            throw $this->createNotFoundException();
         }
         return $this->render('ArticleBundle:Default:detail.html.twig', [
             "article" => $article
@@ -58,7 +63,12 @@ class DefaultController extends Controller
     {
         $article = new Article();
         $form = $this->createForm(ArticleType::class, $article);
-        $form->add("Ajouter", "submit");
+        $form->add("Ajouter", "submit", ["attr" => ["class" => "btn btn-primary"]]);
+
+        //Démonstration du service validator permettant de valider une instance de la classe article
+        $validator = $this->get("validator");
+        $list = $validator->validate($article);
+        dump($list);
 
         $form->handleRequest($request);
 
@@ -80,8 +90,14 @@ class DefaultController extends Controller
         ]);
     }
 
+    /**
+     * @Secure(roles="ROLE_ADMIN")
+     */
     public function deleteAction($id, Request $request)
     {
+//        $user = $this->getUser();
+//        var_dump($user);
+//        die;
         $em = $this->getDoctrine()->getManager();
         if (null === $article = $this->findArticleById($id)) {
             throw $this->createNotFoundException();
@@ -97,12 +113,25 @@ class DefaultController extends Controller
     }
 
     // Accessible seulement en GET
-    public function updateAction($id)
+    public function updateAction($id, Request $request)
     {
         $article = $this->findArticleById($id);
         $form = $this->createFormForArticle($article);
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($article);
+            $em->flush();
+
+            /** @var Session $session */
+            $session = $request->getSession();
+            $session->getFlashBag()->add('info', "L'article a bien été modifié !");
+
+            return $this->redirectToRoute("article_list");
+        }
         return $this->render("ArticleBundle:Default:update.html.twig", [
-            "formulaire" => $form->createView()
+            "formulaire" => $form->createView(),
+            "article_id" => $article->getId()
         ]);
     }
 
@@ -113,17 +142,9 @@ class DefaultController extends Controller
      */
     private function createFormForArticle(Article $article)
     {
-        $formBuilder = $this->createFormBuilder($article);
-        $formBuilder
-            ->add("title", "text")
-            ->add("description", "textarea")
-            ->add("content", "textarea")
-            ->add("createdAt", "datetime")
-            ->add("Ajouter", "submit")
-            ->add("Reset", "reset")
-            ->setAction($this->generateUrl("article_update_post", ["id" => $article->getId()]));
-        /** @var Form $form */
-        return $formBuilder->getForm();
+        $form = $this->createForm(ArticleType::class, $article);
+        $form->add("update", "submit", ["label" => "Mettre à jour", "attr" => ["class" => "btn btn-primary"]]);
+        return $form;
     }
 
     // Accessible seulement en POST
@@ -142,7 +163,10 @@ class DefaultController extends Controller
                 "slug" => $article->getSlug(),
             ]);
         }
-        return new Response("updatePostAction");
+        return $this->forward("ArticleBundle:Default:update", [
+            "id"   => $article->getId(),
+            "slug" => $article->getSlug(),
+        ]);
     }
 
     public function listAction(Request $request)
@@ -169,7 +193,7 @@ class DefaultController extends Controller
 
     /**
      * Permet d'ajouter une image à l'article avec id = $id
-     * @param $id   Id de l'article
+     * @param $id int   Id de l'article
      * @return Response
      */
     public function addImageAction($id)
@@ -223,7 +247,7 @@ class DefaultController extends Controller
         return $this->getRepository()->find($id);
     }
 
-    // ******************* FONCTION DE TESTS *****************************//
+    // ******************* FONCTION DE TESTS & DEMONSTRATION *****************************//
 
     /**
      * @param EntityManager $em
@@ -280,6 +304,24 @@ class DefaultController extends Controller
 
         $em->persist($article);
         $em->flush();
+    }
+
+    /**
+     * @return Form
+     */
+    private function createFormForArticleWithFormBuilder(Article $article)
+    {
+        $formBuilder = $this->createFormBuilder($article);
+        $formBuilder
+            ->add("title", "text")
+            ->add("description", "textarea")
+            ->add("content", "textarea")
+            ->add("createdAt", "datetime")
+            ->add("Ajouter", "submit")
+            ->add("Reset", "reset")
+            ->setAction($this->generateUrl("article_update_post", ["id" => $article->getId()]));
+        /** @var Form $form */
+        return $formBuilder->getForm();
     }
 
 }

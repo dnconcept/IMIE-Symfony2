@@ -23,6 +23,12 @@ class ArticleRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findAllToArray()
+    {
+        $qb = $this->createQueryBuilder("art");
+        return $qb->getQuery()->getArrayResult();
+    }
+
     public function findArticleByDescription($description)
     {
         $qb = $this->createQueryBuilder("art");

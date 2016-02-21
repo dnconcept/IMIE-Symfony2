@@ -1,3 +1,11 @@
+user:
+    resource: "@UserBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+user_route_plus:
+    resource: "@UserBundle/Resources/config/routing.yml"
+
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
@@ -5,3 +13,4 @@ app:
 article_bundle:
     resource: "@ArticleBundle/Resources/config/routing.yml"
     prefix:   /kiosque
+

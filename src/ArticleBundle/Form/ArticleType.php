@@ -18,10 +18,12 @@ class ArticleType extends AbstractType
             ->add('title')
             ->add('description')
             ->add('content')
-            ->add('createdAt', 'datetime')
             ->add('updatedAt', 'datetime')
-            ->add('createdBy')
-            ->add('image', new ImageType())
+            ->add('image', ImageType::class)
+            ->add('creator', 'entity', [
+                "class" => "UserBundle\Entity\User",
+                "property" => "username"
+            ])
         ;
     }
     

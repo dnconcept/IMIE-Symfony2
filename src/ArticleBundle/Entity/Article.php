@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use UserBundle\Entity\User;
 
 /**
  * Article
@@ -31,7 +32,7 @@ class Article
      *
      * @ORM\Column(name="title", type="string", length=150)
      * @Assert\NotNull()
-     * @Assert\Length(min=15, max=150)
+     * @Assert\Length(min=5, max=150)
      */
     private $title;
 
@@ -40,7 +41,8 @@ class Article
      *
      * @ORM\Column(name="description", type="text")
      * @Assert\NotNull()
-     * @Assert\Length(min=15, max=150)
+     * @Assert\Regex("/^[a-zA-Z0-9]+/", message="This value should be alphanumeric")
+     * @Assert\Length(min=5, max=150)
      */
     private $description;
 
@@ -48,7 +50,6 @@ class Article
      * @var string
      *
      * @ORM\Column(name="content", type="text")
-     * @Assert\NotNull()
      */
     private $content;
 
@@ -67,13 +68,6 @@ class Article
     private $updatedAt;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="created_by", type="string", length=255)
-     */
-    private $createdBy;
-
-    /**
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="Comment", mappedBy="article", cascade={"persist", "remove"})
@@ -86,6 +80,13 @@ class Article
      * @ORM\OneToOne(targetEntity="Image", inversedBy="article", cascade={"persist"})
      */
     private $image;
+
+    /**
+     * @var Image
+     *
+     * @ORM\ManyToOne(targetEntity="\UserBundle\Entity\User")
+     */
+    private $creator;
 
     /**
      * Article constructor.
@@ -200,29 +201,6 @@ class Article
     }
 
     /**
-     * Set createdBy
-     *
-     * @param string $createdBy
-     * @return Article
-     */
-    public function setCreatedBy($createdBy)
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    /**
-     * Get createdBy
-     *
-     * @return string
-     */
-    public function getCreatedBy()
-    {
-        return $this->createdBy;
-    }
-
-    /**
      * @return string
      */
     public function getContent()
@@ -309,6 +287,24 @@ class Article
     public function getImage()
     {
         return $this->image;
+    }
+
+    /**
+     * @return User
+     */
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    /**
+     * @param User $creator
+     * @return Article
+     */
+    public function setCreator($creator)
+    {
+        $this->creator = $creator;
+        return $this;
     }
 
     /**

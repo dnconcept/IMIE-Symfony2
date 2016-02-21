@@ -1,0 +1,39 @@
+{% extends '@User/layout.html.twig' %}
+
+{% block title %}Liste des utilisateurs | {{ parent() }}{% endblock %}
+
+{% block body %}
+    <h1>Liste des utilisateurs</h1>
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Salt</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td><a href="{{ path('user_show', { 'id': user.id }) }}">{{ user.id }}</a></td>
+                <td>{{ user.username|e }}</td>
+                <td>{{ user.password }}</td>
+                <td>{{ user.salt }}</td>
+                <td>{% if user.roles %}{{ user.roles|join(', ') }}{% endif %}</td>
+                <td class="text-center">
+                    <div class="btn-group btn-group-xs">
+                        <a class="btn btn-default" title="Détail de l'utilisateur" data-toggle="tooltip" href="{{ path('user_show', { 'id': user.id }) }}"><i class="fa fa-eye"></i></a>
+                        <a class="btn btn-primary" title="Editer l'utilisateur" data-toggle="tooltip" href="{{ path('user_edit', { 'id': user.id }) }}"><i class="fa fa-edit"></i></a>
+                        <a class="btn btn-danger" title="Supprimer l'utilisateur" data-toggle="tooltip"
+                           href="{{ path('user_delete', { 'id': user.id }) }}"><i class="fa fa-remove"></i></a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a class="btn btn-primary" href="{{ path('user_new') }}"><i class="fa fa-add"></i> Ajouter un utilisateur</a>
+{% endblock %}

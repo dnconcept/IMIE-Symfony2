@@ -1,6 +1,6 @@
 {% extends "ArticleBundle::layout.html.twig" %}
 
-{% block body %}
+{% block page %}
     <h3>Mise un jour d'article</h3>
-    {{ form(formulaire) }}
+    {{ form(formulaire, { 'action' :  path("article_update_post", {"id" : article_id}), 'attr' : { "novalidate" : "novalidate"} }) }}
 {% endblock %}

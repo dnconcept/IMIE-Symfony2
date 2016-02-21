@@ -1,29 +1,19 @@
 {% extends "ArticleBundle::layout.html.twig" %}
-{% block stylesheets %}
-    <style type="text/css">
-        .content h3 {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-    </style>
-{% endblock %}
-{% block body %}
 
-    {{ parent() }}
+{% block page %}
     <div class="content">
-        <h2>Page d'accueil de notre bundle ArticleBundle</h2>
+        <h3>Page d'accueil de notre bundle ArticleBundle</h3>
 
         <h3>Fonctions</h3>
-        <p>
+        <div>
             Génération de l'url de la route "article_homepage" avec la fonction <strong>path</strong> de TWIG <br>
         <pre>{% verbatim %}{{ path("article_homepage") }}{% endverbatim %} => <a href="{{ path("article_homepage") }}">{{ path("article_homepage") }}</a></pre>
-        </p>
+        </div>
 
-        <p>
+        <div>
             Génération de l'url de la route "article_homepage" avec la fonction <strong>url</strong> de TWIG <br>
         <pre>{% verbatim %}{{ url("article_homepage") }}{% endverbatim %} => <a href="{{ url("article_homepage") }}">{{ url("article_homepage") }}</a></pre>
-        </p>
+        </div>
 
         <h3>Définir des variables dans le template</h3>
 

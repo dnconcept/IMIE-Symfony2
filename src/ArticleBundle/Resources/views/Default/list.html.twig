@@ -2,11 +2,8 @@
 
 {% block title %}Liste des articles | {{ parent() }} {% endblock %}
 
-{% block body %}
-
-    {{ parent() }}
-
-    <h3>Liste des articles [ {{ articles|length }} ]</h3>
+{% block page %}
+    <h3>Liste des articles [ {{ articles|length }} ]    <small>Visible seulement pour les utilisateurs avec le rôle : "ROLE_USER"</small>   </h3>
     <table class="table table-bordered table-responsive table-striped article-bundle">
         <thead>
         <tr>
@@ -15,8 +12,7 @@
             <th>Description</th>
             <th>Contenu</th>
             <th>Créé le</th>
-            <th></th>
-            <th colspan="4">Par</th>
+            <th colspan="2"></th>
         </tr>
         </thead>
         <tbody>
@@ -28,17 +24,23 @@
                 <td>{{ article.content }}</td>
                 <td>{{ article.createdAt | date("d M Y h:i A") }}</td>
                 <td>{{ article.comments | length }} commentaires</td>
-                <td>{{ article.createdBy }}</td>
-                <td>
-                    <a class="btn btn-default"
-                       href="{{ path ("article_detail",{"slug": article.slug, "id": article.id }) }}"
-                       data-toggle="tooltip"
-                       title="Voir l'article">
-                        <i class="fa fa-eye"></i>
-                    </a>
+                <td class="text-center" width="100px">
+                    <div class="btn-group btn-group-xs">
+                        <a class="btn btn-default"
+                           href="{{ path ("article_detail", {"slug": article.slug, "id": article.id }) }}"
+                           data-toggle="tooltip"
+                           title="Voir l'article">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        {% if is_granted("ROLE_ADMIN") %}
+                            {#Si l'utilisateur a le role administrateur #}
+                            <a class="btn btn-danger" href="{{ path("article_delete", {"id": article.id}) }}" data-toggle="tooltip"
+                               title="Supprimer"><i class="fa fa-remove"></i></a>
+                        {% endif %}
+                        <a class="btn btn-primary" href="{{ path("article_update", {"id": article.id}) }}" data-toggle="tooltip"
+                           title="Editer"><i class="fa fa-edit"></i></a>
+                    </div>
                 </td>
-                <td><a class="btn btn-danger" href="{{ path("article_delete", {"id": article.id}) }}">Supprimer</a></td>
-                <td><a class="btn btn-default" href="{{ path("article_update", {"id": article.id}) }}">Mettre à jour</a></td>
             </tr>
         {% endfor %}
         </tbody>
